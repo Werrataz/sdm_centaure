@@ -2,6 +2,8 @@
 
 Ce court README vous donne les éléments de base à connaitre sur ce projet, puis vous redirige vers un readme plus spécialisé.
 
+Ce github étant public, vous ne trouverez pas le code ici, seulement deux fichiers README.md correspondant à la documentation. Le code est sur le serveur HCAP5, dans le dossier `/data/sdm_centaure` (centaure étant le nouveau nom du projet).
+
 Ce code est structuré autour de deux dossiers. Un dossier domain, qui contient des fonctionnalitées métier, et un dossier layers, qui contient des éléments de code qui sont utilisés dans différentes applications métiers présentes dans domain. Chaque dossier dans domain correspond donc à une application métier spécifique (gestion des traps, gestion de la collecte SNMP,...).
 
 Plus précisement, la structure du projet est la suivante :
