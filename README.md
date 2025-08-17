@@ -90,7 +90,7 @@ Peut être lancé à partir d'une requête HTTP sur l'endpoint api_ae/check_alar
 
 ### manage_bdd_main.py
 
-Ne peut être lancé qu'en ligne de commande. Prend plusieurs arguments et est capable de faire des __suppressions dans la base de donnée__. __Ne pas lancer__ sans savoir précisement ce que vous faites ! Taper `python manage_bdd_main.py -h` pour les détails. 
+Ne peut être lancé qu'en ligne de commande. Prend plusieurs arguments et est capable de faire des suppressions et du netoyage dans la base de donnée. __Ne pas lancer sans savoir précisement ce que vous faites !__ Taper `python manage_bdd_main.py -h` pour les détails. 
 
 ### snmp.py
 
