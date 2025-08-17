@@ -76,10 +76,10 @@ Pour chaque fonctionnalité métier, vous trouverez à la racine du projet un (e
 
 ## Layers
 
-Layers se comporte comme une bibliothèque indépendante. Layers n'importe jamais rien depuis domain (et il serait plus que pertinent de garder cette logique !). Le seul fichier externe au dossier que le code peut importer est config.py. En fait, il pourrait être pertinent de faire de l'ensemble du code dans layers une bibliothéque à part entière.
+Layers se comporte comme une bibliothèque indépendante. Layers n'importe jamais rien depuis domain (et il serait plus que pertinent de garder cette logique !). Le seul fichier externe au dossier que le code peut importer est config.py. 
 
-Vous pouvez aussi décider de limiter au maximum les nouvelles modifications dans cette partie du code, qui commence à être très stable, et de l'utiliser pour créer de nouvelles applications métiers ou modifier celles existantes en fonction des besoins.
+Vous pouvez aussi décider de limiter au maximum les nouvelles modifications dans cette partie du code et de ne l'utiliser que pour créer de nouvelles applications métiers ou modifier celles existantes en fonction des besoins. J'appelle "applications métier" tout les fichiers présentés juste au-dessus, chacun dépendant d'un dossier spécifique dans `domain/`.
 
 ## Et ensuite..
 
-Pour la suite de cette documentation, je vous invite à lire le fichier README.md présent dans le dossier layers, et qui contient une documentation générale de l'ensemble du code dans ce même dossier.
+Pour la suite de cette documentation, je vous invite à lire le fichier README.md présent dans le dossier layers, qui contient une documentation générale de l'ensemble du code dans ce même dossier.
