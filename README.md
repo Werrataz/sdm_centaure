@@ -18,6 +18,7 @@ Plus précisement, la structure du projet est la suivante :
 |   |    └── utils // contient tout les utilitaires propres au domain
 |   |
 │   ├── /trap/
+|   ...
 │
 ├── /layers/ // ce qu'il y a dans ce dossier doit être modifié avec précaution, car peut impacter plusieurs fonctionnalitées métiers. Il ne s'agit pas de fonctionnalitées métier, mais de couches qui peuvent être assemblées de différentes manières pour former des fonctionnalitées métier. Les fichiers de test pytest portent principalement sur le contenu de ce dossier.
 |    ├── /request_handler/ // brique de collecte SNMP, structure en classe
@@ -26,11 +27,12 @@ Plus précisement, la structure du projet est la suivante :
 |    ├── /alarm_manager/ // brique de gestion des alarmes, dépend de request_handler, database_manager et event_listener
 |    └── /alerter/ // brique de gestion des alerteurs (envoi d'emails)
 |
-├── /obsolete/ // contient du code obscolete ou non fonctionnel, va être supprimé
+├── /obsolete/ // contient du code obscolete ou non fonctionnel 
 |
 ├── /operators/
 |   ├── col_operators.py // contient l'ensemble des 'operateurs' (fonctions de traitement des données avant enregistrement en base) de l'outil de collecte
 |   ├── trap_operators.py // contient l'ensemble des 'operateurs' des traps
+|   ...
 |
 ├── config.py // contient toutes les variables statiques et les éléments de configuration
 ├── pytest.ini // fichier de configration de pytest (vous pouvez lancer les tests en vous positionnant à la racine du projet et en lançant la commande pytest -v)
@@ -41,7 +43,9 @@ Plus précisement, la structure du projet est la suivante :
 Un fichier de requirements indique l'ensemble des bibliothéques nécessaires pour la bonne execution du code. Les numéros de version doivent également être respectés, notamment pour pysmi et pysnmp (code incompatible avec les versions les plus récentes de ces deux bibliothéques).
 L'ensemble de ce code est compatible avec python3.9, est normalement compatible avec python3.8 (mais pas de tests faits pour vérifier), et est peut-être compatible avec python3.7. Il n'est pas compatible avec des versions inférieures à python3.7. Le code devrait être compatible avec toutes les versions futures de python3, les mainteneurs de python s'étant engagés à maintenir le retrocompatibilitée à partir de python3.7.
 
-Vous retrouverez ainsi les fonctionnalitées métier suivantes :
+## Le dossier `domain`
+
+Vous trouverez les sous-dossiers suivants dans `domain`, chacun correspondant à une fonctionnalitée précise : 
 
 #### alarm_monitor
 
@@ -72,13 +76,13 @@ Pour chaque fonctionnalité métier, vous trouverez à la racine du projet un (e
 - main_alarm_monitor : gère la vérification des alarmes en base à partir des données récupérées sur les équipements. Est lancé toutes les 5 minutes par le crontab.
 - main_alarm_monitor_for_one_machine : peut être lancé à partir d'une requête HTTP sur l'endpoint api_ae/check_alarm.php (ou en commande shell si besoin, en précisant le nom de l'AE à vérifier dans l'argument name).
 - manage_bdd_main : ne peut être lancé qu'en ligne de commande. Prend plusieurs arguments et est capable de faire des suppressions / du netoyage dans la base de donnée. Ne pas lancer sans savoir précisement ce que vous faites !!!
-- snmp : petit script de test de requête snmp qui supporte DES. Ce lance en ligne de commande, et est documenté (taper python snmp.py -h pour la documentation). C'est juste un utilitaire de test, calqué sur snmpwalk, je le laisse si besoin.
+- snmp : petit script de test de requête snmp qui supporte DES. Ce lance en ligne de commande, et est documenté (taper python snmp.py -h pour la documentation). C'est juste un utilitaire de test, calqué sur snmpwalk, je le laisse si besoin. 
 
 ## Layers
 
 Layers se comporte comme une bibliothèque indépendante. Layers n'importe jamais rien depuis domain (et il serait plus que pertinent de garder cette logique !). Le seul fichier externe au dossier que le code peut importer est config.py. 
 
-Vous pouvez aussi décider de limiter au maximum les nouvelles modifications dans cette partie du code et de ne l'utiliser que pour créer de nouvelles applications métiers ou modifier celles existantes en fonction des besoins. J'appelle "applications métier" tout les fichiers présentés juste au-dessus, chacun dépendant d'un dossier spécifique dans `domain/`.
+Vous pouvez aussi décider de limiter au maximum les nouvelles modifications dans cette partie du code et de ne l'utiliser que pour créer de nouvelles applications métiers ou modifier celles existantes en fonction des besoins. J'appelle ici "applications métier" tout les fichiers présentés juste au-dessus, chacun dépendant d'un dossier spécifique dans `domain`.
 
 ## Et ensuite..
 
