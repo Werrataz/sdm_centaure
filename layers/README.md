@@ -631,14 +631,14 @@ Pour récupérer les données liées à plusieurs metriques sur un même AE (c'e
 
 ```python
 data_manager = MySQLManager(data = {'metrique_1': [ ... ], 'metrique_2': [ ... ], ... }, tables_id=ID) # ID : l'id correspondant à l'AE dont vous voulez récupérer les données.
-# Ici, ce que vous indiquez dans data n'a strictement aucunes importances
-data_manager.run(metrique_a_recuperer, '_fetch_entry', where = "la condition sql que vous voulez", prepare = False, once = True) # on precise bien les arguments prepare = False et once = True. Ce code ira récupérer les données liées à toutes les metriques contenues dans data en respectant la condition where fournie. Vous pouvez aussi passer le where directement au constructeur : data_manager = MySQLManager(..., where = "La condition sql que vous voulez", ...)
+# le champ data servira de référence pour savoir quelles metriques récupérer
+data_manager.fetch(where = "la condition sql que vous voulez", prepare = False, once = True) # on precise bien les arguments prepare = False et once = True. Ce code ira récupérer les données liées à toutes les metriques contenues dans data en respectant la condition where fournie. Vous pouvez aussi passer le where directement au constructeur : data_manager = MySQLManager(..., where = "La condition sql que vous voulez", ...)
 print(data_manager.fetched_data) # contiendra un dictionnaire du type {'metrique_1': [{'datetime':121212, 'metric_index': 2, 'value': '54'}, ...], ... }
 ```
 
-> J'en profite pour faire remarquer que les données de fetch s'enregistrent dans un attribut spécifique, l'attribut fetched_data, qui est complétement indépendant de data.
+> J'en profite pour faire remarquer que les données de fetch s'enregistrent dans un attribut spécifique, l'attribut fetched_data.
 
-A noter que vous pouvez faire exactement la même chose sans préciser once=True, mais qu'il faut dans ce cas fournir à MySQLManager le champ `data={'metrique_1': [], 'metrique_2': [], ... }` (avec des listes vides), ce qui est moins pratique si vous voulez faire d'autres types de requête avec la même instance (par exemple, faire un fetch et un update avec la même instance).
+A noter que vous pouvez faire exactement la même chose sans préciser once=True, mais qu'il faut dans ce cas fournir à MySQLManager le champ `data={'metrique_1': [], 'metrique_2': [], ... }` (avec des listes vides).
 
 Si vous voulez les données d'une seule métrique (donc d'une seule table) :
 
@@ -661,7 +661,7 @@ Dans tout les cas, les données récupérées seront accessibles dans data_manag
         ...
     }
 
-> Vous pouvez également bien sûr créer vos propres scripts pour faire des SELECT, et ce sera peut-être la solution la plus simple dans certains cas, en particulier si vous voulez récupérer les données liées à une metrique pour chaque machine. Le code de Centaure fait l'inverse : récupérer les données des metriques pour une machine spécifique. Par exemple, si vous voulez récupérer toutes les alarmes actives, le plus simple sera de faire un SHOW TABLES, puis de récupérer toutes les tables au format alarme_ID, et de faire un SELECT avec alarme_active = 1 dans chaqu'unes de ces tables.
+> Vous pouvez également bien sûr créer vos propres scripts pour faire des SELECT, et ce sera peut-être la solution la plus simple dans certains cas, en particulier si vous voulez récupérer les données liées à une metrique pour chaque machine. Le code de Centaure fait l'inverse : il récupère les données des metriques pour une machine spécifique. Par exemple, si vous voulez récupérer toutes les alarmes actives, le plus simple sera de faire un SHOW TABLES, puis de récupérer toutes les tables au format alarme_ID, et de faire un SELECT avec alarme_active = 1 dans chaqu'unes de ces tables.
 
 ### Bug exploit pour faire une requête ORDER BY ..
 
@@ -674,7 +674,7 @@ En fait, il suffit de fournir une valeur de where du type where = "alarme_active
 
 ### Un point sur la méthode delete
 
-delete est de loin la méthode la moins testée, car n'avait pas d'utilitée dans les applications métiers développées jusqu'à maintenant. Elle soufre cependant visiblement des mêmes problèmes que fetch, et il faut donc l'appeler avec les mêmes arguments pour obtenir le résultat souhaité. Au delà de ce point, je peux juste vous conseiller de tester de manière appronfondie toute opération faite avec cette méthode avant de la lancer sur la base (par exemple, et à minima, en faisant un fetch avant avec les mêmes arguments pour voir quelles metriques sont réellement impactées).
+delete est de loin la méthode la moins testée, car n'avait pas d'utilitée dans les applications métiers développées jusqu'à maintenant. Elle soufre cependant visiblement des mêmes problèmes que fetch, et il faut donc l'appeler avec les mêmes arguments pour obtenir le résultat souhaité. Au delà de ce point, je peux juste vous conseiller de tester de manière appronfondie toute opération faite avec cette méthode avant de la lancer sur la base (par exemple, et à minima, en faisant un fetch avant avec les mêmes arguments et en affichant le résultat pour voir quelles metriques sont réellement impactées).
 
 ## Quelques compléments sur SNMPRequestHandler
 
@@ -720,13 +720,13 @@ Comme vous pouvez le voir, la plupart des champs sont liées à la configuration
 String. Adresse IP de la cible au format standard "10.90..".
 
 **name :**
-String. Nom descriptif de l’instance. On pourra par exemple mettre le NAME de la machine. Sert un fait à personnaliser les logs. Un nom par défaut sera généré si vous n'en fournissez pas.
+String. Nom descriptif de l’instance. On pourra par exemple mettre le NAME de la machine. Sert en fait uniquement à personnaliser les logs. Un nom par défaut sera généré si vous n'en fournissez pas.
 
 **version :**
 Int. Version du protocole SNMP à utiliser (2, 3).
 
 **community :**
-String Chaîne de communauté SNMP. Ignoré si version=3.
+String. Chaîne de communauté SNMP. Ignoré si version=3.
 
 **username :**
 Nom d’utilisateur SNMPv3.
@@ -744,13 +744,13 @@ Protocole de chiffrement SNMPv3 (`AES`, `DES`, etc.). L'ensemble des protocoles 
 Mot de passe pour le chiffrement SNMPv3.
 
 **port :**
-Port SNMP de la cible (par défaut 161).
+Int. Port SNMP de la cible (par défaut 161).
 
 **timeout :**
-Durée maximale d’attente d’une réponse (secondes).
+Int. Durée maximale d’attente d’une réponse (secondes).
 
 **retries :**
-Nombre de tentatives en cas d’échec.
+Int. Nombre de tentatives en cas d’échec.
 
 **options :**
 Dictionnaire d’options supplémentaires. Ce dictionnaire est complétement libre, mais dans ce code, on y renseigne en général un champ username et un champ id.
@@ -764,7 +764,8 @@ Le champ requests est le seul un peu spécifique. Il doit avoir un format très 
             'oid': '1.3.6.4.2.12.134',
             'metric_name': 'metrique_1',
             'operators': 'operateur_1'
-        }
+        }, // pour chaque oid à contacter, la liste doit contenir un dictionnaire de ce type
+        ...
     ]
 
 Vous pouvez ne pas fournir de champ operators. Ce champ n'est d'ailleurs jamais utilisé directement par SNMPRequestHandler, il ne sert que lors de l'enregistrement en base pour MySQLManager. Il est présent ici car, d'un point de vu métier, il semble plus logique d'associer l'operateur à l'oid ou à la metrique.
@@ -781,7 +782,7 @@ Il y a cependant un dernier point à évoquer sur cette classe.
 ### point sur la méthode update_results
 
 Cette méthode est celle qui gère la jointure entre oid et metrique quand c'est nécessaire, et qui fait un premier formatage des données.
-Ce qu'il y a d'important à dire sur cette méthode, c'est que c'est celle qu'on va vouloir réécrire si on veut changer les fonctionnalitées de SNMPRequestHandler. Ainsi, pour la vérification des tables d'alarme, j'ai réécris cette méthode pour lui permettre de gérer la reconnaissance d'oids spécifiques dans des arbres plus complexes, donc en changeant le pré-traitement effectué par cette méthode. En particulier, dans ce cas précis, j'ai créé deux autres méthodes pour huawei et vertiv qui gèrent la gestion des arbres d'oid propres à leur constructeur.
+Ce qu'il y a d'important à dire sur cette méthode, c'est que c'est celle qu'on va vouloir réécrire si on veut changer les fonctionnalitées de SNMPRequestHandler. Ainsi, pour la vérification des tables d'alarme, j'ai réutilisé le même code mais réécris cette méthode pour lui permettre de gérer la reconnaissance d'oids spécifiques dans des arbres plus complexes, donc en changeant le pré-traitement effectué par cette méthode. En particulier, dans ce cas précis, j'ai créé deux autres méthodes pour huawei et vertiv qui gèrent la gestion des arbres d'oid propres à leur constructeur. Vous trouverez les détails sur cette méthode dans `domain/alarm_monitor/SNMPAlarmRequestHandler.py`.
 
 ## Gestion des traps et des alarmes
 
@@ -827,11 +828,11 @@ Enfin, trap_callback attend une fonction. C'est en pratique dans cette fonction 
 
 La suite de la logique liée à la gestion des traps se fait dans `domain/traps_and_alarms/process_trap.py`, qui contient la fonction process_trap, fonction qui est passée à event_listener.
 
-Les traps renvoient un arbre d'OID avec plusieurs feuilles, donc plusieurs valeurs. L'idée est en général d'enregistrer ces valeurs comme une seule entrée (ligne) dans une table. C'est ce que fait process_trap.
+Les traps renvoient un arbre d'OID avec plusieurs feuilles, donc plusieurs valeurs. L'idée est d'enregistrer ces valeurs comme une seule entrée (ligne) dans une table. C'est ce que fait process_trap.
 
-Cette fonction se base sur les données dans la table TRAPS pour effectuer un certain nombre de traitement. Précisement, elle appelle la fonction generate_results dans `domain/traps_and_alarms/generate_results.py`, qui s'occupe de récupérer les données dans la table de TRAPS, et d'appliquer des opérateurs aux données, puis de les reformater au format standard attendu MySQLManager. process_trap récupère alors le data généré, et le passe ensuite à une instance à MySQLManager pour l'enregistrer en base.
+Cette fonction se base sur les données dans la table TRAPS pour effectuer un certain nombre de traitement. Précisement, elle appelle la fonction generate_results dans `domain/traps_and_alarms/generate_results.py`, qui s'occupe de récupérer les données dans la table de TRAPS, et d'appliquer des opérateurs aux données, puis de les reformater au format standard attendu MySQLManager. process_trap récupère alors le data généré, et le passe ensuite à une instance de MySQLManager pour l'enregistrer en base.
 
-process_trap (comme son nom, certe, ne l'indique pas) gère aussi les alarmes. Elle appelle pour ça la fonction process_alarm (dans `domain/traps_and_alarms/process_alarm.py`) qui prend en entrée la donnée passée à MySQLManager, la retraite un peu (le format des traps et des alarmes différe très légèrement), et utilise AlarmManager pour mettre à jour les alarmes à partir de ces données.
+process_trap (comme son nom, certe, ne l'indique pas) gère aussi les alarmes. Elle appelle pour ça la fonction process_alarm (dans `domain/traps_and_alarms/process_alarm.py`) qui prend en entrée la donnée des traps, la retraite un peu (le format des traps et des alarmes différe très légèrement), et utilise AlarmManager pour mettre à jour les alarmes à partir de ces données.
 
 ### Parentèse sur les opérateurs des traps
 
@@ -884,7 +885,7 @@ On veut générer le dictionnaire exacte des alarmes à mettre à off ou à acti
 
 ```python
 recorder = MySQLAlarmManager(
-    SNMPAlarmRequestHandler(address, name=name, requests=requests, **config, options=machine_data, logger=self.logger), # une classe héritant de SNMPRequestHandler, et qu'on aura modifier pour qu'elle nous renvoie toutes les données voulues. On aurait aussi très bien pu fournir un champ data.
+    SNMPAlarmRequestHandler(address, name=name, requests=requests, **config, options=machine_data, logger=self.logger), # une classe héritant de SNMPRequestHandler, et qu'on aura modifié pour qu'elle nous renvoie toutes les données voulues. On aurait aussi très bien pu fournir un champ data.
     table_struct=['ref', 'equipement', 'info', 'message_erreur', 'alarme_active', 'start_time', 'end_time'], # une structure possible des alarmes en table
     logger=self.logger # le logger
 )
@@ -897,7 +898,7 @@ recorder.merge_fetched_with_results() # si une alarme renvoyée par l'équipemen
 recorder.treat() # on effectue les treat, qui va cette fois opérer sur les données "mergés", donc éventuellement passer à off certaines alarmes
 ```
 
-En pratique, c'est ce code qui est utilisé, mais il est exploité dans la classe AlarmSNMPScrapper (qui hérite de SNMPScrapper et fait quelques modifications). Vous pouvez consulter le code dans `domain/alarm_monitor` pour plus de détails.
+En pratique, c'est ce code qui est utilisé, mais il est exploité dans la classe AlarmSNMPScrapper (qui hérite de SNMPScrapper). Vous pouvez consulter le code dans `domain/alarm_monitor` pour plus de détails.
 
 ## alerter
 
@@ -912,15 +913,16 @@ MySQLAlerter gère l'ensemble des vérifications liées à une alerte. Une alert
 ```
 
 **name :** C'est un nom, qui aparaitra dans certains logs d'erreur et dans l'email envoyé le cas échéant. Il n'a aucunes autres influence sur l'execution du code.
+
 **machines :** C'est une liste de string (les noms des machines tel qu'indiqué dans historica). La classe va récupérer en interne les données liées à ces machines depuis la base historica, principalement l'ID, et récupérer les données correspondant à ces machines en base.
-**construct :**
-String. Vous pouvez renseigner un constructeur plutôt que des noms de machine en base. Toutes les machines liées à ce constructeur seront alors récupérées. Vous devez renseigner exactement le champ construct indiqué en base (il n'y a aucun traitement particulier fait sur ce champ). Notez que si vous fournissez un constructeur et un champ machines, la requête récupérera tout ce qui correspond à l'un des deux paramètres au moins.
-**limit_date :**
-Attend un timestamp UNIX (donc un int). C'est une des conditions sur les données en base. Si vous indiquez un timestamp correspondant à l'heure courant moins 6 heures, l'alerteur vérifiera vos conditions sur toutes les données en base sur les 6 dernières heures.
-**emails :**
-Liste de str, ou str si un seul email ou si une liste d'email séparé par des ','. Si l'alerte est déclanchée, l'email sera envoyé à tout les emails renseignés dans ce champ.
-**conditions :**
-List ou JSON (string au format JSON). Contient une liste du type :
+
+**construct :** String. Vous pouvez renseigner un constructeur plutôt que des noms de machine en base. Toutes les machines liées à ce constructeur seront alors récupérées. Vous devez renseigner exactement le champ construct indiqué en base (il n'y a aucun traitement particulier fait sur ce champ). Notez que si vous fournissez un constructeur et un champ machines, la requête récupérera tout ce qui correspond à l'un des deux paramètres au moins.
+
+**limit_date :** Attend un timestamp UNIX (donc un int). C'est une des conditions sur les données en base. Si vous indiquez un timestamp correspondant à l'heure courant moins 6 heures, l'alerteur vérifiera vos conditions sur toutes les données en base sur les 6 dernières heures.
+
+**emails :** Liste de str, ou str si un seul email ou si une liste d'email séparé par des ','. Si l'alerte est déclanchée, l'email sera envoyé à tout les emails renseignés dans ce champ.
+
+**conditions :** List ou JSON (string au format JSON). Contient une liste du type :
 
     [
         {
@@ -936,7 +938,7 @@ List ou JSON (string au format JSON). Contient une liste du type :
         ...
     ]
 
-Ce JSON contient en fait la liste des conditions de déclanchement de l'alerte, avec pour chaque condition toutes les informations nécessaires précisant la nature de l'alerte. Si vous voulez des précisions sur chaque champ, la page historica des alertes.
+Ce JSON contient en fait la liste des conditions de déclanchement de l'alerte, avec pour chaque condition toutes les informations nécessaires précisant la nature de l'alerte. Si vous voulez des précisions sur chaque champ, consultez la page historica des alertes.
 
 Cette classe est la plus récente, et je n'ai donc pas eu de raison pour l'instant de "généraliser" son fonctionnement. Ainsi, elle est prévue pour fonctionner dans le cadre d'un code spécifique uniquement :
 
@@ -999,7 +1001,7 @@ if __name__ == "__main__": # le code principal est ici
     alerter.check() # on lance la vérification avec check, qui enverra également un email le l'alerte est déclanchée
 ```
 
-Si vous voulez maintenant vérifier et déclancher toutes les alertes en base, il suffit de modifier get_alerter pour qu'il renvoit toutes les alertes en base plutôt qu'une seule spécifique.
+Si vous voulez maintenant vérifier et déclancher toutes les alertes en base, il suffit de modifier get_alerter pour qu'il renvoit toutes les alertes en base plutôt qu'une seule spécifique. 
 
 Dans la pratique, la fonction get_alerter est dans `domain/alerter/get_alerter.py`.
 
@@ -1046,8 +1048,8 @@ remove_pid_from_list(pid)
 
 > Notez que tout les process que vous passez à cette fonction et qui sont encore actifs sont pris en compte.
 
-> Il n'est pas dramatique d'oublier d'appeler remove_pid_from_list, c'est même obstionnelle. En fait, has_active_processes_in_list vérifie si les process renseignés sont encore actifs. C'est également pour ça qu'il est conseillé de toujours appeler has_active_processes_in_list, même si vous ne voulez utiliser que howmany_pid_in_list, car ce dernier ne fait pas de vérification.
+> Il n'est pas dramatique d'oublier d'appeler remove_pid_from_list, c'est même obstionnelle. En fait, has_active_processes_in_list vérifie si les process renseignés sont encore actifs. C'est également pour ça que je vous conseille de toujours appeler has_active_processes_in_list, même si vous ne voulez utiliser que howmany_pid_in_list, car ce dernier ne fait pas de vérification.
 
-> Vous trouverez dans le même fichier la méthode kill_process_in_list, qui permet tout simplement de forcer l'arrêt de tout les process actifs renseignés.
+> Vous trouverez dans le même fichier la fonction kill_process_in_list, qui permet tout simplement de forcer l'arrêt de tout les process actifs renseignés.
 
 Et.. c'est tout pour process_manager !
