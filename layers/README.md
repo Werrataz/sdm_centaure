@@ -1008,7 +1008,7 @@ Dans la pratique, la fonction get_alerter est dans `domain/alerter/get_alerter.p
 ## process_manager
 
 Le dernier dossier présent dans layers et qui n'a pas encore été évoqué est process_manager.
-Il y a dans ce dossier plusieurs outils pour gérer des process. En fait, comme les opérations de collecte sont longues, on voudra parfois faire en sorte qu'une nouvelle collecte ne puisse pas se lancer tant que l'encienne n'est pas terminée. Le but étant de ne pas surcharger la RAM du serveur faisant tourner le script, en faisant tourner 5, 10, 30 fois le même script en parallèle. Ce besoin est d'autant plus important que de nombreuses classes de centaure sont assez gourmandes en RAM.
+Il y a dans ce dossier plusieurs outils pour gérer des process. En fait, comme les opérations de collecte sont longues, on voudra parfois faire en sorte qu'une nouvelle collecte ne puisse pas se lancer tant que l'encienne n'est pas terminée. Le but étant de ne pas surcharger la RAM du serveur faisant tourner le script, en évitant de faire tourner 5, 10, 30 fois le même script en parallèle. Ce besoin est d'autant plus important que de nombreuses classes de centaure sont assez gourmandes en RAM.
 Voici donc quelques exemples permettant d'utiliser ce code :
 
 ```python
