@@ -541,7 +541,7 @@ Le format attendu par data est le suivant :
 
 Vous ne voudrez donc à priori jamais fournir un champ data et un champ instance en entrée de MySQLManager. Notez que les valeurs dans data seront potentiellement écrasées quand vous appelerez object.run().
 
-> Remarque : vous pourrez accéder à data en appelant self.data après l'initialisation de votre instance. De même, si vous utilisez une instance, vous pourrez voir les données récupérées dans self.data après lancement des requêtes sur la machine (avec self.object.run() par exemple). Notez que vous ne pouvez pas modifier à la main le champ data (self.data = truc renvera une erreur). Si vous devez absolument modifier data, vous devez appeler self.set_data(nouvelle_valeur_que_vous_voulez_donner_a_data).
+> Vous pourrez accéder à data en appelant self.data après l'initialisation de votre instance. De même, si vous utilisez un champ `instance`, vous pourrez voir les données récupérées dans self.data sur la machine après execution de self.object.run(). Notez que vous ne pouvez pas modifier à la main le champ data ('self.data = nouvelle_valeur' renvera une erreur). Si vous devez absolument modifier data, vous devez appeler self.set_data(nouvelle_valeur_de_data).
 
 **database_config :**
 C'est tout simplement les éléments de connexion à la base de donnée. Vous n'aurez pas besoin de l'utiliser la plupart du temps car quand rien n'est fourni, les instances de MySQLRecorder vont chercher la configuration appelée `db_config` dans config.py.
