@@ -69,14 +69,40 @@ Module de traitement des alertes. Gère l'exécution automatique du système d'a
 
 ## les fichiers executables
 
+
 Pour chaque fonctionnalité métier, vous trouverez à la racine du projet un (et parfois plusieurs) fichiers python correspondant au fichier principal de la fonctionnalitée. C'est toujours les fichiers à la racine du projet qui sont lancés lors des executions.
 
-- collection_main.py : gére la collecte régulière des données. Est lancée toutes les 15 minutes par le crontab.
-- listen_traps.py : gére l'écoute sur le port 162 et la gestion des traps reçues sur ce port (et des alarmes qui liées à ces traps). Est gérée par un service systemctl, traplistener-sdm, qui peut être lancé, arrêté, ect... avec les commandes systemctl start/stop/status/ect... traplistener-sdm comme n'importe quel autre service daemon.
-- main_alarm_monitor : gère la vérification des alarmes en base à partir des données récupérées sur les équipements. Est lancé toutes les 5 minutes par le crontab.
-- main_alarm_monitor_for_one_machine : peut être lancé à partir d'une requête HTTP sur l'endpoint api_ae/check_alarm.php (ou en commande shell si besoin, en précisant le nom de l'AE à vérifier dans l'argument name).
-- manage_bdd_main : ne peut être lancé qu'en ligne de commande. Prend plusieurs arguments et est capable de faire des suppressions / du netoyage dans la base de donnée. Ne pas lancer sans savoir précisement ce que vous faites !!!
-- snmp : petit script de test de requête snmp qui supporte DES. Ce lance en ligne de commande, et est documenté (taper python snmp.py -h pour la documentation). C'est juste un utilitaire de test, calqué sur snmpwalk, je le laisse si besoin. 
+### collection_main.py
+
+Gére la collecte régulière des données. Est lancée toutes les 15 minutes par le crontab.
+
+### listen_traps.py
+
+Gére l'écoute sur le port 162 et la gestion des traps reçues sur ce port (et des alarmes qui liées à ces traps). Est gérée par un service systemctl, traplistener-sdm, qui peut être lancé, arrêté, ect... avec les commandes systemctl start/stop/status/ect... traplistener-sdm comme n'importe quel autre service daemon.
+
+### main_alarm_monitor.py
+
+Gère la vérification des alarmes en base à partir des données récupérées sur les équipements. Est lancé toutes les 5 minutes par le crontab.
+
+### main_alarm_monitor_for_one_machine.py
+
+Peut être lancé à partir d'une requête HTTP sur l'endpoint api_ae/check_alarm.php, ou en commande shell si besoin, tappez alors `python main_alarm_for_one_machine.py -h` pour les détails.
+
+### manage_bdd_main.py
+
+Ne peut être lancé qu'en ligne de commande. Prend plusieurs arguments et est capable de faire des __suppressions dans la base de donnée__. __Ne pas lancer__ sans savoir précisement ce que vous faites ! Taper `python manage_bdd_main.py -h` pour les détails. 
+
+### snmp.py
+
+Petit script de test de requête snmp qui supporte DES. Ce lance en ligne de commande, et est documenté (taper `python snmp.py -h` pour la documentation). C'est juste un utilitaire de test, calqué sur snmpwalk, je le laisse si besoin.
+
+### main_one_alerter.py
+
+Permet de lancer un alerter (force le déclanchement de l'alerteur). Ne s'utilise qu'en ligne de commande. Tapez `python main_one_alerter.py -h` pour les détails.
+
+### main_alerters.py
+
+Est lancé par le crontab toutes les heures. Permet de faire tourner les alerteurs, en tenant compte de la dernière date à laquelle ils ont été déclanchés.
 
 ## Layers
 
