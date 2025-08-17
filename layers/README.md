@@ -1048,7 +1048,7 @@ remove_pid_from_list(pid)
 
 > Notez que tout les process que vous passez à cette fonction et qui sont encore actifs sont pris en compte.
 
-> Il n'est pas dramatique d'oublier d'appeler remove_pid_from_list, c'est même obstionnelle. En fait, has_active_processes_in_list vérifie si les process renseignés sont encore actifs. C'est également pour ça que je vous conseille de toujours appeler has_active_processes_in_list, même si vous ne voulez utiliser que howmany_pid_in_list, car ce dernier ne fait pas de vérification.
+> Il n'est pas dramatique d'oublier d'appeler remove_pid_from_list, c'est même optionnelle. En fait, has_active_processes_in_list vérifie si les process renseignés sont encore actifs. C'est également pour ça que je vous conseille de toujours appeler has_active_processes_in_list, même si vous ne voulez utiliser que howmany_pid_in_list, car ce dernier ne fait pas de vérification.
 
 > Vous trouverez dans le même fichier la fonction kill_process_in_list, qui permet tout simplement de forcer l'arrêt de tout les process actifs renseignés.
 
